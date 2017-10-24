@@ -61,29 +61,31 @@ def calcrand(fsam,clin,gt):
             else:
                 m00 += 1
     
-    vrand = (m11+m00)/(m11+m01+m10+m00)#Calculating Rand Index
-    vjac = m11/(m11+m10+m01)#Calculating Jaccard Index
+    vrand = (m11+m00)/float(m11+m01+m10+m00)#Calculating Rand Index
+    vjac = m11/float(m11+m10+m01)#Calculating Jaccard Index
     return [vrand,vjac]
 
 def main():
-	global ctr
-	ctr = 0
-	pddata = pd.read_csv("iyer.txt",sep='\t',header=None)
-	testv = pddata.drop([0,1], 1)
-	gt = pddata[1]
-	testv.columns = [i for i in range(testv.shape[1])]
-	ttv = testv.transpose()
-	rsam=[randint(0,testv.shape[0]-1) for p in range(0,5)]
-	#rsam = [5,25,32,100,132]
-	rsam.sort()
-	fsam = [ttv[i] for i in rsam]
-	fsam = np.array(fsam)
-	clin = [[] for i in range(testv.shape[0])]
-	fsam,clin,ctr = calcent(fsam,clin,ttv)
-	vrand,vjac = calcrand(fsam,clin,gt)
-	print("The Number of Iterations before converging is " + str(ctr))
-	print("The Rand Index is " + str(vrand))
-	print("The Jaccard Index is " + str(vjac))
+    global ctr
+    ctr = 0
+    pddata = pd.read_csv("../../Data/iyer.txt",sep='\t',header=None)
+    print pddata.shape
+    testv = pddata.drop([0,1], 1)
+    gt = pddata[1]
+    testv.columns = [i for i in range(testv.shape[1])]
+    ttv = testv.transpose()
+    rsam=[randint(0,testv.shape[0]-1) for p in range(0,5)]
+    #rsam = [5,25,32,100,132]
+    rsam.sort()
+    fsam = [ttv[i] for i in rsam]
+    fsam = np.array(fsam)
+    clin = [[] for i in range(testv.shape[0])]
+    fsam,clin,ctr = calcent(fsam,clin,ttv)
+    vrand,vjac = calcrand(fsam,clin,gt)
+    print vrand
+    print("The Number of Iterations before converging is " + str(ctr))
+    print("The Rand Index is " + str(vrand))
+    print("The Jaccard Index is " + str(vjac))
 
 if __name__ == '__main__':
-	main()
+    main()
