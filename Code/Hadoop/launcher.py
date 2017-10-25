@@ -91,7 +91,7 @@ while True:
 
 	proc = Popen(HADOOP_RUN_CMD, stdout = PIPE, stderr = PIPE)
 	std = proc.communicate()
-	print std[1]
+
 	if 'completed successfully' in std[1]:
 		proc2 = Popen(HADOOP_GET_CLUSTERS.split(), stdout = PIPE, stderr = PIPE)
 
@@ -110,9 +110,6 @@ while True:
 			centroids = newClusters
 		proc = Popen((HADOOP_DEL_OUTPUT).split(), stdout=PIPE, stderr=PIPE)
 		proc.wait()
-
-
-# print centroids
 
 
 data = np.genfromtxt(data_file)
