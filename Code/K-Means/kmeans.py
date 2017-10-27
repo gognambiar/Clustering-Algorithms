@@ -94,11 +94,11 @@ def main():
 	try:
 		opts, args = getopt.getopt(sys.argv[1:],"hi:p:a:",["ifile=", "pvalue=", "avalue="])
 	except getopt.GetoptError:
-		print('dbscan.py -i <inputfile> -p <numberofclusters> -e <>')
+		print('dbscan.py -i <inputfile> -p <numberofclusters> -a <centroid points>')
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
-			print('dbscan.py -i <inputfile> -p <numberofclusters> -e <>')
+			print('dbscan.py -i <inputfile> -p <numberofclusters> -a <centroid points>')
 			sys.exit()
 		elif opt in ("-i", "--ifile"):
 			file_name = arg
