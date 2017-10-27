@@ -70,7 +70,7 @@ def calcrand(centroid_array,centroid_of_elements,ground_truth):
 	value_jaccard = m11/(m11+m10+m01)#Calculating Jaccard Index
 	return [value_rand,value_jaccard,cluster_number_elements]
 
-def plotPCA(cluster_number_elements,orig_data_frames,file_name):
+def plotPCA(cluster_number_elements,orig_data_frames,file_name,storePCA,outputFile):
 	sklearn_pca = sklearnPCA(n_components=2)
 	Y = sklearn_pca.fit_transform(orig_data_frames)#Calling PCA function
 	xval = pd.DataFrame(Y)[0]
@@ -85,27 +85,35 @@ def plotPCA(cluster_number_elements,orig_data_frames,file_name):
 	plt.ylabel('Principal Component 2')
 	plt.legend(numpoints=1)
 	plt.subplots_adjust(bottom=.20, left=.20)
-	fig1.suptitle("PCA plot for centroids in "+file_name,fontsize=20)
+	fig1.suptitle("PCA plot for centroids in "+file_name.split("/")[-1],fontsize=20)
 	#fig1.savefig("PCA_"+file_name+".png")#Plotting the results based on PCA
-	plt.show()
+	if(storePCA == True):
+		fig1.savefig("_".join([outputFile,file_name.split("/")[-1].split(".")[0]])+".png")#Plotting the results based on PCA
+	else:
+		plt.show()
 
 
 def main():
-	try:
-		opts, args = getopt.getopt(sys.argv[1:],"hi:p:a:",["ifile=", "pvalue=", "avalue="])
-	except getopt.GetoptError:
-		print('dbscan.py -i <inputfile> -p <numberofclusters> -a <centroid points>')
-		sys.exit(2)
-	for opt, arg in opts:
-		if opt == '-h':
-			print('dbscan.py -i <inputfile> -p <numberofclusters> -a <centroid points>')
-			sys.exit()
-		elif opt in ("-i", "--ifile"):
-			file_name = arg
-		elif opt in ("-p", "--pvalue"):
-			p = int(arg)
-		elif opt in ("-a", "--evalue"):
-			initial_points = arg
+	import argparse
+	parser = argparse.ArgumentParser(description='K-means Clustering')
+	# optional arguments
+	parser.add_argument('-o', '--output', help='Output file to store PCA visualization')
+	# required arguments
+	requiredNamed = parser.add_argument_group('Required named arguments')
+	requiredNamed.add_argument('-i', '--input', help='Input data file name', required=True, type=str)
+	requiredNamed.add_argument('-n', '--num', help='Number of Clusters', required=True, type=int)
+	requiredNamed.add_argument('-a', '--centarray', help='Centroid Values', required=True, type=str)
+	args = parser.parse_args()
+
+	file_name = args.input
+	p = args.num
+	initial_points = args.centarray
+	storePCA = False
+	outputFile = None
+
+	if args.output:
+	    storePCA = True
+	    outputFile = args.output
 
 	initial_points = initial_points.split(",")
 	initial_points = [int(i) for i in initial_points]		
@@ -132,7 +140,7 @@ def main():
 	print("The Number of Iterations before converging is " + str(ctr))
 	print("The Rand Index is " + str(value_rand))
 	print("The Jaccard Index is " + str(value_jaccard))
-	plotPCA(cluster_number_elements,orig_data_frames,file_name)#Plot PCA graph
+	plotPCA(cluster_number_elements,orig_data_frames,file_name,storePCA,outputFile)#Plot PCA graph
 
 if __name__ == '__main__':
 	main()
