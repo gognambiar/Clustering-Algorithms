@@ -2,114 +2,137 @@ import pandas as pd
 import numpy as np
 from random import randint
 import sys
+import getopt
 from sklearn.decomposition import PCA as sklearnPCA
 import matplotlib.pyplot as plt
 
 
 #Function to calculate centroid
-def calcent(fsam,clin,ttv):
+def calcent(centroid_array,centroid_of_elements,original_data):
 	global ctr
-	nsam = [fsam[i] for i in range(len(fsam))]
-	for i in range(ttv.shape[1]):
+	new_centroid_array = [centroid_array[i] for i in range(len(centroid_array))]
+	for i in range(original_data.shape[1]):
 		minv = 1000
-		for k in range(len(fsam)):
-			if(np.linalg.norm(ttv[i]-fsam[k]) < minv):
-				minv = np.linalg.norm(ttv[i]-fsam[k])#Finding the distance between points and the centroid
-				clin[i] = fsam[k]
+		for k in range(len(centroid_array)):
+			if(np.linalg.norm(original_data[i]-centroid_array[k]) < minv):
+				minv = np.linalg.norm(original_data[i]-centroid_array[k])#Finding the distance between points and the centroid
+				centroid_of_elements[i] = centroid_array[k]
 		
-	for k in range(len(fsam)):
+	for k in range(len(centroid_array)):
 		sm = []
-		for i in range(ttv.shape[1]):
-			if(np.array_equal(clin[i],fsam[k])):
-				sm.append(ttv[i])
-		nsam[k] = np.average(np.array(sm),axis=0)#Finding the centroid of the cluster
+		for i in range(original_data.shape[1]):
+			if(np.array_equal(centroid_of_elements[i],centroid_array[k])):
+				sm.append(original_data[i])
+		new_centroid_array[k] = np.average(np.array(sm),axis=0)#Finding the centroid of the cluster
 
 	ctr += 1
-	if((not np.array_equal(fsam,nsam)) and ctr < 500):#Maximum number of iterations is given as 500
-		fsam,clin,ctr = calcent(nsam,clin,ttv)
+	if((not np.array_equal(centroid_array,new_centroid_array)) and ctr < 500):#Maximum number of iterations is given as 500
+		centroid_array,centroid_of_elements,ctr = calcent(new_centroid_array,centroid_of_elements,original_data)
 	
-	return fsam,clin,ctr
+	return centroid_array,centroid_of_elements,ctr
 
 #Function to calculate Rand and Jaccard Index
-def calcrand(fsam,clin,gt):
-	cldis = np.zeros(len(clin))
-	ints = 0
-	for k in range(len(fsam)):
-		for i in range(len(clin)):
-			if(np.array_equal(clin[i],fsam[k])):
-				cldis[i] = k+1
+def calcrand(centroid_array,centroid_of_elements,ground_truth):
+	cluster_number_elements = np.zeros(len(centroid_of_elements))
+	for k in range(len(centroid_array)):
+		for i in range(len(centroid_of_elements)):
+			if(np.array_equal(centroid_of_elements[i],centroid_array[k])):
+				cluster_number_elements[i] = k+1#Initializing a 1 dimesnional array with all the results
 				
-	resrn = np.zeros((len(clin),len(clin)))
-	gtrn = np.zeros((len(clin),len(clin)))
+	compare_result = np.zeros((len(centroid_of_elements),len(centroid_of_elements)))
+	compare_ground_truth = np.zeros((len(centroid_of_elements),len(centroid_of_elements)))
 	
-	for i in range(len(clin)):
-		for j in range(len(clin)):
-			if(np.array_equal(clin[i],clin[j])):
-				resrn[i][j] = 1
+	for i in range(len(centroid_of_elements)):
+		for j in range(len(centroid_of_elements)):
+			if(np.array_equal(centroid_of_elements[i],centroid_of_elements[j])):
+				compare_result[i][j] = 1#Initializing a 2D array with the results to calculate Rand and Jaccard Index
 				
-	for i in range(len(clin)):
-		for j in range(len(clin)):
-			if(np.array_equal(gt[i],gt[j])):
-				gtrn[i][j] = 1
+	for i in range(len(centroid_of_elements)):
+		for j in range(len(centroid_of_elements)):
+			if(np.array_equal(ground_truth[i],ground_truth[j])):
+				compare_ground_truth[i][j] = 1#Initializing a 2D array with the ground truth to calculate Rand and Jaccard Index
 				
 	m00,m01,m10,m11 = 0,0,0,0
 	
-	for i in range(len(clin)):
-		for j in range(len(clin)):
-			if(resrn[i][j] == 1 and gtrn[i][j] == 1):
+	#Comapring the values to find m00,m01,m10,m11
+	for i in range(len(centroid_of_elements)):
+		for j in range(len(centroid_of_elements)):
+			if(compare_result[i][j] == 1 and compare_ground_truth[i][j] == 1):
 				m11 += 1
-			elif(resrn[i][j] == 0 and gtrn[i][j] == 1):
+			elif(compare_result[i][j] == 0 and compare_ground_truth[i][j] == 1):
 				m01 += 1
-			elif(resrn[i][j] == 1 and gtrn[i][j] == 0):
+			elif(compare_result[i][j] == 1 and compare_ground_truth[i][j] == 0):
 				m10 += 1
 			else:
 				m00 += 1
 	
-	vrand = (m11+m00)/(m11+m01+m10+m00)#Calculating Rand Index
-	vjac = m11/(m11+m10+m01)#Calculating Jaccard Index
-	return [vrand,vjac,cldis]
+	value_rand = (m11+m00)/(m11+m01+m10+m00)#Calculating Rand Index
+	value_jaccard = m11/(m11+m10+m01)#Calculating Jaccard Index
+	return [value_rand,value_jaccard,cluster_number_elements]
 
-#Plotting the obtained result after running PCA
-def plotPCA(cldis,testv,fname):
+def plotPCA(cluster_number_elements,orig_data_frames,file_name):
 	sklearn_pca = sklearnPCA(n_components=2)
-	Y = sklearn_pca.fit_transform(testv)
+	Y = sklearn_pca.fit_transform(orig_data_frames)#Calling PCA function
 	xval = pd.DataFrame(Y)[0]
 	yval = pd.DataFrame(Y)[1]
-	lbls = set(cldis.astype(int))
+	lbls = set(cluster_number_elements.astype(int))
 	fig1 = plt.figure(1)
 	for lbl in lbls:
-		cond = cldis == lbl
+		cond = cluster_number_elements == lbl
 		plt.plot(xval[cond], yval[cond], linestyle='none', marker='o', label=lbl)
 
 	plt.xlabel('Principal Component 1')
 	plt.ylabel('Principal Component 2')
 	plt.legend(numpoints=1)
 	plt.subplots_adjust(bottom=.20, left=.20)
-	fig1.suptitle("PCA plot for centroids in "+fname,fontsize=20)
-	fig1.savefig("PCA_"+fname+".png")
+	fig1.suptitle("PCA plot for centroids in "+file_name,fontsize=20)
+	#fig1.savefig("PCA_"+file_name+".png")#Plotting the results based on PCA
+	plt.show()
 
 
 def main():
-	fname = sys.argv[1]
+	try:
+		opts, args = getopt.getopt(sys.argv[1:],"hi:p:a:",["ifile=", "pvalue=", "avalue="])
+	except getopt.GetoptError:
+		print('dbscan.py -i <inputfile> -p <numberofclusters> -e <>')
+		sys.exit(2)
+	for opt, arg in opts:
+		if opt == '-h':
+			print('dbscan.py -i <inputfile> -p <numberofclusters> -e <>')
+			sys.exit()
+		elif opt in ("-i", "--ifile"):
+			file_name = arg
+		elif opt in ("-p", "--pvalue"):
+			p = int(arg)
+		elif opt in ("-a", "--evalue"):
+			initial_points = arg
+
+	initial_points = initial_points.split(",")
+	initial_points = [int(i) for i in initial_points]		
+	if(len(initial_points) != int(p)):
+		print("Please enter the initial centroids for all the clusters")
+		sys.exit(2)
+
 	global ctr
 	ctr = 0
-	pddata = pd.read_csv(fname,sep='\t',header=None)
-	testv = pddata.drop([0,1], 1)
-	gt = pddata[1]
-	testv.columns = [i for i in range(testv.shape[1])]
-	ttv = testv.transpose()
-	rsam=[randint(0,testv.shape[0]-1) for p in range(0,5)]
-	#rsam = [5,25,32,100,132]
-	rsam.sort()
-	fsam = [ttv[i] for i in rsam]
-	fsam = np.array(fsam)
-	clin = [[] for i in range(testv.shape[0])]
-	fsam,clin,ctr = calcent(fsam,clin,ttv)
-	vrand,vjac,cldis = calcrand(fsam,clin,gt)
+	data_from_file = pd.read_csv(file_name,sep='\t',header=None)#Reading the file as Pandas dataframe so that we can treat each column as an element
+	orig_data_frames = data_from_file.drop([0,1], 1)#Dropping the column number and ground truth columns from data
+	ground_truth = data_from_file[1]#Storing ground truth column
+	orig_data_frames.columns = [i for i in range(orig_data_frames.shape[1])]#Renaming the columns from 0 to n
+	original_data = orig_data_frames.transpose()#Taking transpose so that we can treat the data like normal array where we can access rows
+	#initial_points=[randint(0,orig_data_frames.shape[0]-1) for p in range(0,5)]
+	#initial_points = [5,25,32,100,132]
+	initial_points = [x-1 for x in initial_points]
+	initial_points.sort()
+	centroid_array = [original_data[i] for i in initial_points]#Picking centroids for the initial points
+	centroid_array = np.array(centroid_array)
+	centroid_of_elements = [[] for i in range(orig_data_frames.shape[0])]
+	centroid_array,centroid_of_elements,ctr = calcent(centroid_array,centroid_of_elements,original_data)#Calculate Centroid
+	value_rand,value_jaccard,cluster_number_elements = calcrand(centroid_array,centroid_of_elements,ground_truth)#Calculate Rand and Jaccard Indexes
 	print("The Number of Iterations before converging is " + str(ctr))
-	print("The Rand Index is " + str(vrand))
-	print("The Jaccard Index is " + str(vjac))
-	plotPCA(cldis,testv,fname)
+	print("The Rand Index is " + str(value_rand))
+	print("The Jaccard Index is " + str(value_jaccard))
+	plotPCA(cluster_number_elements,orig_data_frames,file_name)#Plot PCA graph
 
 if __name__ == '__main__':
 	main()
