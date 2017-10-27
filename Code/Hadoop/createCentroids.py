@@ -23,7 +23,7 @@ def createCentroidFile(data, k, centroidFile, centers, centersDefined):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Create Centroids File for KMeans')
-    parser.add_argument('-c','--center', help='Comma Separated Gene Ids for centroids [eg. 1,5,2,3]\n Number of centers should be equal to k', type=str)
+    parser.add_argument('-s','--center', help='Comma Separated Gene Ids for centroids [eg. 1,5,2,3]\n Number of centers should be equal to k', type=str)
     # required arguments
     requiredNamed = parser.add_argument_group('Required named arguments')
     requiredNamed.add_argument('-i', '--input', help='Input data file name', required=True, type=str)
