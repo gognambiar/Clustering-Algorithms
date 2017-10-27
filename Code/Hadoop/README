@@ -1,0 +1,88 @@
+### CREATE CENTROID
+
+usage: python2.7 createCentroids.py [-h] [-s CENTER] -i INPUT -n NUM -o OUTPUT
+
+Create Centroids File for KMeans
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s CENTER, --center CENTER
+                        Comma Separated Gene Ids for centroids [eg. 1,5,2,3]
+                        Number of centers should be equal to k
+
+Required named arguments:
+  -i INPUT, --input INPUT
+                        Input data file name
+  -n NUM, --num NUM     Number of Clusters
+  -o OUTPUT, --output OUTPUT
+                        Output File to store centroids
+
+
+Formats:
+	-o : string : 	any valid path with filename to store centroids
+			the file will have n lines where n is the number of clusters to be formed
+			each line will have m columns where m is the number of features
+	
+	-i : string :	any valid input data file to perform HAC
+			the file format should have n + 2 columns where n is the number of features
+			<id> <ground_truth> <feature1> <feature2> .. <featureN>
+
+	-n : integer : 	number of clusters for KMeans
+
+	-s : string :	comma separated string of gene ids which need to be taken as centers for KMeans
+			eg : 1,2,3,4,5 OR 4,7,1,10,3
+			the number of ids should be equal to the number of clusters which need to be formed
+ 
+### LAUNCHER
+
+usage: launcher.py [-h] [-s CENTERS] [-m MAXITERS] [-t TOLERANCE] [-p PCA] -d
+                   DATA -n NUM -c CENTROID -x HADOOP
+
+Hadoop KMeans Launcher File
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s CENTERS, --centers CENTERS
+                        Comma Separated Gene Ids for centroids [eg. 1,5,2,3]
+                        Number of centers should be equal to k
+  -m MAXITERS, --maxIters MAXITERS
+                        Max number of Iterations
+  -t TOLERANCE, --tolerance TOLERANCE
+                        Tolerance value for cluster comparision
+  -p PCA, --pca PCA     Output file to store PCA visualization
+
+Required named arguments:
+  -d DATA, --data DATA  Data file name
+  -n NUM, --num NUM     Number of Clusters
+  -c CENTROID, --centroid CENTROID
+                        Centroid File name
+  -x HADOOP, --hadoop HADOOP
+                        Hadoop Streaming Jar Path
+
+Formats:
+	-p : string : 	any valid path with filename to store pca path
+			the program will automatically append the filename of data file in the figure
+			eg: python2.7 heirarchial.py -i cho.txt -n 5 -o ~/Desktop/PCA
+				pca filename: ~/Desktop/PCA_cho.png
+	
+	-d : string :	any valid input data file to perform KMeans
+			the file format should have n + 2 columns where n is the number of features
+			<id> <ground_truth> <feature1> <feature2> .. <featureN>
+
+	-c : string :	any valid input centroid file path to store centroids for KMeans
+			this file is created automatically in the program and should not be modified during the program execution
+
+	-x : string :	valid path to the hadoop streaming jar [ os dependent ]
+			eg : /usr/local/Cellar/hadoop/2.8.1/libexec/share/hadoop/tools/lib/hadoop-streaming-2.8.1.jar
+
+	-n : integer : 	number of clusters for KMeans
+
+	-s : string :	comma separated string of gene ids which need to be taken as centers for KMeans
+                        eg : 1,2,3,4,5 OR 4,7,1,10,3
+                        the number of ids should be equal to the number of clusters which need to be formed
+
+	-m : integer :	maximum number of iterations for KMeans
+			default : 100
+	
+	-t : float : 	tolerance for the cluster distance matching for convergence
+			default : 0.00001
