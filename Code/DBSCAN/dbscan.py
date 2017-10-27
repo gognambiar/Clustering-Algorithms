@@ -1,9 +1,7 @@
 import numpy as np
 from sklearn.metrics.pairwise import euclidean_distances
-import os
-import sys
-import getopt
-import copy
+import os, sys, copy
+import argparse
 from sklearn.decomposition import PCA as sklearnPCA
 import matplotlib.pyplot as plt
 
@@ -112,67 +110,66 @@ def calcIndexes(clusters, ground_truth):
     jacIndex = m11/float(m11+m10+m01)#Calculating Jaccard Index
     return [randIndex,jacIndex]
 
-def plotPCA( data, inputfile):
-    global my_labels
+def plotPCA(labels, data, inputFile, outputFile, store=False):
     sklearn_pca = sklearnPCA(n_components=2)
-    Y = sklearn_pca.fit_transform(data)
-    #print(Y)
-    xval = Y[:,0]
-    yval = Y[:,1]
-    lbls = set(my_labels)
+    newData = sklearn_pca.fit_transform(data)
+    xval = newData[:,0]
+    yval = newData[:,1]
+    lbls = set(labels)
     #(my_labels)
     fig1 = plt.figure(1)
     #print(lbls)
     for lbl in lbls:
         #cond = my_labels == lbl
-        cond = [i for i, x in enumerate(my_labels) if x == lbl]
+        cond = [i for i, x in enumerate(labels) if x == lbl]
         plt.plot(xval[cond], yval[cond], linestyle='none', marker='o', label=lbl)
 
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
-    plt.legend(numpoints=1)
+    plt.legend(numpoints=1, loc=0)
     plt.subplots_adjust(bottom=.20, left=.20)
-    fig1.suptitle("PCA plot for centroids in "+inputfile.split("/")[-1],fontsize=20)
-    fig1.savefig("PCA_"+inputfile.split("/")[-1].split(".")[0]+".png")
+    fig1.suptitle("PCA plot for DBSCAN in "+inputFile.split("/")[-1],fontsize=20)
+    if store:
+        fig1.savefig("_".join([outputFile,inputFile.split("/")[-1].split(".")[0]])+".png")
+    else:
+        plt.show()
 
 def main(argv):
     global distMatrix
     global my_labels
-    queryfile = None
-    try:
-        opts, args = getopt.getopt(argv,"hi:o:m::e=",["ifile=", "ofile=", "mvalue=", "evalue="])
-    except getopt.GetoptError:
-        print('dbscan.py -i <inputfile> -o <outputfile> -m <minpointsvalue> -e <epsilonvalue>')
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print('dbscan.py -i <inputfile> -o <outputfile> -m <minpointsvalue> -e <epsilonvalue>')
-            sys.exit()
-        elif opt in ("-i", "--ifile"):
-            inputfile = arg
-        elif opt in ("-o", "--ofile"):
-            outputfile = arg
-        elif opt in ("-m", "--mvalue"):
-            m = int(arg)
-        elif opt in ("-e", "--evalue"):
-            e = int(arg)
+    parser = argparse.ArgumentParser(description='DBSCAN Clustering')
+    # optional arguments
+    parser.add_argument('-o', '--output', help='Output file to store PCA visualization')
+    # required arguments
+    requiredNamed = parser.add_argument_group('Required named arguments')
+    requiredNamed.add_argument('-i', '--input', help='Input data file name', required=True, type=str)
+    requiredNamed.add_argument('-e', '--eps', help='Value of epsilon, The maximum distance between two points for them to be considered as in the same cluster.', required=True, type=float)
+    requiredNamed.add_argument('-m', '--minpts', help='Value of minpoints, The number of points in a cluster for a point to be considered as a core point. This includes the point itself', required=True, type=int)
+    args = parser.parse_args()
+    
+    inputFile = args.input
+    eps = args.eps
+    minPts = args.minpts
+    storePCA = False
+    outputFile = None
 
-    data,labels = loadData(inputfile)
+    if args.output:
+        storePCA = True
+        outputFile = args.output
+
+    print storePCA, outputFile
+
+    data,labels = loadData(inputFile)
+
     distMatrix = generateDistanceMatrix(data)
-    minPts = 4
-    eps = 1.03
+
     dbScan(data, eps, minPts)
-    my_labels 
-    #print set(my_labels)
+    randIndex, jaccIndex = calcIndexes(cluster, labels)
 
-    complete = {}
-    # print len(cluster),labels.shape
-    randIndex, jacIndex = calcIndexes(cluster, labels)
+    print "Rand Index: ", randIndex
+    print "Jaccard Index: ", jaccIndex
 
-    print "Rand Index:", randIndex
-    print "Jaccard Index:", jacIndex
-
-    plotPCA(data, inputfile)
+    plotPCA(my_labels , data, inputFile, outputFile, storePCA)
 
 
 if __name__ == "__main__":
