@@ -1,0 +1,25 @@
+usage: python2.7 heirarchial.py [-h] [-o OUTPUT] -i INPUT -n NUM
+
+Hierarchial Agglomerative Clustering
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o OUTPUT, --output OUTPUT
+                        Output file to store PCA visualization
+
+Required named arguments:
+  -i INPUT, --input INPUT
+                        Input data file name
+  -n NUM, --num NUM     Number of Clusters
+
+Formats:
+	-o : string : 	any valid path with filename to store pca path
+			the program will automatically append the filename of input in the figure
+			eg: python2.7 heirarchial.py -i cho.txt -n 5 -o ~/Desktop/PCA
+				pca filename: ~/Desktop/PCA_cho.png
+	
+	-i : string :	any valid input data file to perform HAC
+			the file format should have n + 2 columns where n is the number of features
+			<id> <ground_truth> <feature1> <feature2> .. <featureN>
+
+	-n : integer : number of clusters for HAC
