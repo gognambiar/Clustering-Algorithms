@@ -7,11 +7,13 @@ import numpy as np
 centroids = {}
 current_id = None
 current_count = 0
+count = 0
 centroid_id = None
 
 # input comes from STDIN
 for line in sys.stdin:
     # remove leading and trailing whitespace
+    count += 1
     line = line.strip()
 
     # parse the input we got from mapper.py

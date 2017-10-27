@@ -6,6 +6,7 @@ from pprint import pprint
 
 if len(sys.argv) != 2:
 	print "Needs centroid file input"
+	exit(0)
 
 centroid_file = sys.argv[1]
 

@@ -16,30 +16,30 @@ def compareClusters(original, new, tolerance):
 
 	return True	
 
-def calcRand(clin,gt):
+def calcRand(predicted,actual):
 				
-	resrn = np.zeros((len(clin),len(clin)))
-	gtrn = np.zeros((len(clin),len(clin)))
+	predictedMatrix = np.zeros((predicted.shape[0],predicted.shape[0]))
+	actualMatrix = np.zeros((predicted.shape[0],predicted.shape[0]))
 	
-	for i in range(len(clin)):
-		for j in range(len(clin)):
-			if(np.array_equal(clin[i],clin[j])):
-				resrn[i][j] = 1
+	for i in range(predicted.shape[0]):
+		for j in range(predicted.shape[0]):
+			if(np.array_equal(predicted[i],predicted[j])):
+				predictedMatrix[i][j] = 1
 				
-	for i in range(len(clin)):
-		for j in range(len(clin)):
-			if(np.array_equal(gt[i],gt[j])):
-				gtrn[i][j] = 1
+	for i in range(predicted.shape[0]):
+		for j in range(predicted.shape[0]):
+			if(np.array_equal(actual[i],actual[j])):
+				actualMatrix[i][j] = 1
 				
 	m00,m01,m10,m11 = 0,0,0,0
 	
-	for i in range(len(clin)):
-		for j in range(len(clin)):
-			if(resrn[i][j] == 1 and gtrn[i][j] == 1):
+	for i in range(predicted.shape[0]):
+		for j in range(predicted.shape[0]):
+			if(predictedMatrix[i][j] == 1 and actualMatrix[i][j] == 1):
 				m11 += 1
-			elif(resrn[i][j] == 0 and gtrn[i][j] == 1):
+			elif(predictedMatrix[i][j] == 0 and actualMatrix[i][j] == 1):
 				m01 += 1
-			elif(resrn[i][j] == 1 and gtrn[i][j] == 0):
+			elif(predictedMatrix[i][j] == 1 and actualMatrix[i][j] == 0):
 				m10 += 1
 			else:
 				m00 += 1
@@ -91,6 +91,7 @@ while True:
 
 	proc = Popen(HADOOP_RUN_CMD, stdout = PIPE, stderr = PIPE)
 	std = proc.communicate()
+	# print std
 
 	if 'completed successfully' in std[1]:
 		proc2 = Popen(HADOOP_GET_CLUSTERS.split(), stdout = PIPE, stderr = PIPE)
@@ -124,7 +125,7 @@ proc1.wait()
 output = proc2.communicate()[0]
 new_data = np.fromstring(output, sep="\n").reshape(-1,data.shape[1])
 
-randIndex, jaccIndex = calcRand(data, new_data)
+randIndex, jaccIndex = calcRand(new_data[:,0], data[:,0])
 
 print "Rand Index: ", randIndex
 print "Jaccard Index: ", jaccIndex
