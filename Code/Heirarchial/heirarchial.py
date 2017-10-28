@@ -139,7 +139,7 @@ def main(argv):
     distMatrix = generateDistanceMatrix(data)
 
     clusters_map = generateClusters(distMatrix, k)
-    clusters_array = np.array([clusters_map[i] for i in xrange(len(clusters_map))])
+    clusters_array = np.array([clusters_map[i] for i in xrange(len(clusters_map))]) + 1
 
     randIndex, jaccIndex = calcRand(labels, clusters_map)
 
@@ -147,6 +147,10 @@ def main(argv):
     print "Jaccard Index: ", jaccIndex
 
     plotPCA(clusters_array, data, inputFile, outputFile, storePCA)
+
+    print 'Gene Id\tCluster Id'
+    for i in xrange(len(clusters_array)):
+        print '%s\t%s' % (i+1,clusters_array[i])
 
 
     

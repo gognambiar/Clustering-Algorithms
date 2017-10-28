@@ -202,7 +202,11 @@ if __name__ == "__main__":
     print "Rand Index: ", randIndex
     print "Jaccard Index: ", jaccIndex
 
-    labels = new_data[:,0]
+    labels = new_data[:,0] + 1
     data = new_data[:,1:]
 
     plotPCA(labels, data, dataFile, outputPCAFile, storePCA)
+
+    print 'Gene Id\tCluster Id'
+    for i in xrange(len(labels)):
+        print '%s\t%s' % (i+1,labels[i])
