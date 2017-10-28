@@ -140,7 +140,7 @@ def plotPCA(labels, data, inputFile, outputFile, store=False):
     for lbl in lbls:
         #cond = predicted_labels == lbl
         cond = [i for i, x in enumerate(labels) if x == lbl]
-        plt.plot(xval[cond], yval[cond], linestyle='none', marker='o', label=lbl)
+        plt.plot(xval[cond], yval[cond], linestyle='none', marker='o', label=lbl, markersize=3)
 
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
@@ -150,8 +150,8 @@ def plotPCA(labels, data, inputFile, outputFile, store=False):
     fig1.suptitle("PCA plot for DBSCAN in "+inputFile.split("/")[-1],fontsize=20)
     if store:
         fig1.savefig("_".join([outputFile,inputFile.split("/")[-1].split(".")[0]])+".png")
-    # else:
-    #     plt.show()
+    else:
+        plt.show()
 
 def main(argv):
     global distMatrix
@@ -191,6 +191,10 @@ def main(argv):
     print("Number of Clusters: ",len([i for i in set(predicted_labels) if i != -1]))
 
     plotPCA(predicted_labels , data, inputFile, outputFile, storePCA)
+
+    print 'Gene Id\tCluster Id'
+    for i in xrange(len(predicted_labels)):
+        print '%s\t%s' % (i+1, predicted_labels[i])
 
     
 
