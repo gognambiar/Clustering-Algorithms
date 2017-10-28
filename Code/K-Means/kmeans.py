@@ -140,6 +140,7 @@ def main():
 	centroid_of_elements = [[] for i in range(orig_data_frames.shape[0])]
 	centroid_array,centroid_of_elements,ctr = calcent(centroid_array,centroid_of_elements,original_data)#Calculate Centroid
 	value_rand,value_jaccard,cluster_number_elements = calcrand(centroid_array,centroid_of_elements,ground_truth)#Calculate Rand and Jaccard Indexes
+	print("Gene ID"+"\t"+"Cluster Number")
 	for i in  range(len(cluster_number_elements)):
 		print(str(i+1)+"\t"+str(cluster_number_elements[i]))
 	print("The Rand Index is " + str(value_rand))
