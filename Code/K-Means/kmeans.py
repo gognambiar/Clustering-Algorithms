@@ -128,8 +128,6 @@ def main():
 	ground_truth = data_from_file[1]#Storing ground truth column
 	orig_data_frames.columns = [i for i in range(orig_data_frames.shape[1])]#Renaming the columns from 0 to n
 	original_data = orig_data_frames.transpose()#Taking transpose so that we can treat the data like normal array where we can access rows
-	#initial_points=[randint(0,orig_data_frames.shape[0]-1) for p in range(0,5)]
-	#initial_points = [5,25,32,100,132]
 	initial_points = [x-1 for x in initial_points]
 	initial_points.sort()
 	centroid_array = [original_data[i] for i in initial_points]#Picking centroids for the initial points
