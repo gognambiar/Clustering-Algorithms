@@ -32,6 +32,13 @@ Formats:
 	-s : string :	comma separated string of gene ids which need to be taken as centers for KMeans
 			eg : 1,2,3,4,5 OR 4,7,1,10,3
 			the number of ids should be equal to the number of clusters which need to be formed
+
+
+Required Libraries:
+	import sys
+	import numpy as np 
+	import random
+	import argparse
  
 ### LAUNCHER
 
@@ -86,3 +93,15 @@ Formats:
 	
 	-t : float : 	tolerance for the cluster distance matching for convergence
 			default : 0.00001
+
+The program gives the Rand Index, Jaccard Index and the cluster list as output.
+
+Required Libraries:
+	import sys
+	from subprocess import Popen,PIPE
+	import os
+	import numpy as np
+	import argparse
+	from sklearn.decomposition import PCA as sklearnPCA
+	import matplotlib.pyplot as plt
+
