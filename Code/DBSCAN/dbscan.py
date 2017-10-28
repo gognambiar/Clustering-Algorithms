@@ -38,48 +38,57 @@ def dbScan(data, eps, minPts):
     global cluster
     global predicted_labels
     c = 0 #cluster number
-    #num_pts = data.shape[0]
     visited = [False] * data.shape[0]
     predicted_labels= [0] * data.shape[0]
     for gene_id in range(0, data.shape[0]):
-        #P=data[gene_id]
+        #if gene_id is not visited mark it visited
         if not visited[gene_id]:
             visited[gene_id] = True
+            #get neighbor points for P
             NeighborPts = regionQuery(data, gene_id, eps)
+            #if total neighbor points less than minPts, mark it as noise
             if len(NeighborPts) < minPts:
                 cluster[gene_id] = -1
                 predicted_labels[gene_id]= -1
+            #If point has more than or equal to minPts neighbors
+            #expand cluster after inctrmenting cluster value for new cluster
             else:
                 c = c+1
                 expandCluster(data, gene_id, NeighborPts, c, eps, minPts)
                 #c=c+1
           
-
+#method to expand cluster
 def expandCluster(data, gene_id, NeighborPts, c, eps, minPts):
     global cluster
     global visited
     global predicted_labels
+    #add points P in the cluster C
     cluster[gene_id] = c
     predicted_labels[gene_id] = c
+    # for all neighbor points P_dash of P
     while True:
         if len(NeighborPts) == 0:
             break
         P_dash = NeighborPts.pop()
+        #if point P_dash is not visited, mark it visted and look for its neighbors
         if not visited[P_dash]:
             visited[P_dash] = True
             NeighborPts_dash = regionQuery(data, P_dash, eps)
+            #if number of neighbor points of P_dash is greater than or equal to minPts
+            #add all neighbors of P_dash to neighbors of P
             if len(NeighborPts_dash) >= minPts:
                 NeighborPts.extend(NeighborPts_dash)
-
-        #check if a point marked as noise before lies as a neighbor point for any other point,
-        #if so add add that point to 
+        #check if a point P_dash was marked as noise before lies as a neighbor point for any other point,
+        #if so add add that point to cluster C
         if visited[P_dash] and P_dash in cluster and cluster[P_dash] == -1 :
             cluster[P_dash] = c
             predicted_labels[P_dash] = c
+        #if P_dash is not labelled, mark it in cluster C
         if not P_dash in cluster:
                 cluster[P_dash] = c
                 predicted_labels[P_dash]=c
    
+#method to check in distance matrix to return a list of neighbor points for any point P
 def regionQuery(data, gene_id, eps):
     neighbors = []
     global distMatrix
@@ -88,6 +97,7 @@ def regionQuery(data, gene_id, eps):
             neighbors.append(i)
     return neighbors
 
+#method to calculate external indicex using ground truth labels and predicted labels
 def calcIndexes(clusters, ground_truth):
     predicted = np.zeros((ground_truth.shape[0],ground_truth.shape[0]))
     actual = np.zeros((ground_truth.shape[0], ground_truth.shape[0]))
@@ -116,6 +126,7 @@ def calcIndexes(clusters, ground_truth):
     jacIndex = m11/float(m11+m10+m01)#Calculating Jaccard Index
     return [randIndex,jacIndex]
 
+#method to plot PCS graphs for dataset based on predicted labels
 def plotPCA(labels, data, inputFile, outputFile, store=False):
     sklearn_pca = sklearnPCA(n_components=2)
     sklearn_pca.fit(data)
@@ -161,6 +172,7 @@ def main(argv):
     storePCA = False
     outputFile = None
 
+    #if output file is specified, plots will be saved as png file
     if args.output:
         storePCA = True
         outputFile = args.output
@@ -176,8 +188,11 @@ def main(argv):
     randIndex, jaccIndex = calcIndexes(cluster, labels)
     print("Rand Index: ", randIndex)
     print("Jaccard Index: ", jaccIndex)
+    print("Number of Clusters: ",len([i for i in set(predicted_labels) if i != -1]))
 
     plotPCA(predicted_labels , data, inputFile, outputFile, storePCA)
+
+    
 
 
 if __name__ == "__main__":
