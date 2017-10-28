@@ -105,7 +105,7 @@ def plotPCA( labels, data, inputFile, outputFile, store=False):
 
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
-    plt.legend(numpoints=1)
+    plt.legend(numpoints=1,loc=0)
     plt.subplots_adjust(bottom=.20, left=.20)
     fig1.suptitle("PCA plot for centroids in "+inputFile.split("/")[-1],fontsize=20)
     if store:
@@ -133,8 +133,6 @@ def main(argv):
     if args.output:
         storePCA = True
         outputFile = args.output
-
-    print storePCA, outputFile
 
     data,labels = loadData(inputFile)
 

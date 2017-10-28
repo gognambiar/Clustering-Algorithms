@@ -1,0 +1,32 @@
+usage: kmeans.py [-h] [-o OUTPUT] -i INPUT -n NUM -t ITERATION -a CENTARRAY
+
+K-means Clustering
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o OUTPUT, --output OUTPUT
+                        Output file to store PCA visualization
+
+Required named arguments:
+  -i INPUT, --input INPUT
+                        Input data file name
+  -n NUM, --num NUM     Number of Clusters
+  -t ITERATION, --iteration ITERATION
+                        Number of Iterations
+  -a CENTARRAY, --centarray CENTARRAY
+                        Initial Centroid Gene IDs
+
+
+Formats:
+	-o : string : 	any valid path with filename to store pca plot
+			eg: python3 kmeans.py -i cho.txt -n 5 -a [3,22,56,91,112] -o result
+	
+	-i : string :	any valid input data file to perform K-means
+			the file format should have n + 2 columns where n is the number of features
+			<id> <ground_truth> <feature1> <feature2> .. <featureN>
+
+	-n : integer : number of clusters for K-means
+	
+	-t : integer : number of iterations to run the algorithm
+  
+  	-a : string : Initial centroid points Eg: [3, 5, 9]

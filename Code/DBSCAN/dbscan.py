@@ -18,7 +18,7 @@ predicted_labels = []
 #method to get filepath and read data file
 #strips the column of gene_id and ground truth and stores ground truth as labels
 def loadData(filePath):
-    print(filePath)
+    # print(filePath)
     if not os.path.exists(filePath):
         return None
 
@@ -139,8 +139,8 @@ def plotPCA(labels, data, inputFile, outputFile, store=False):
     fig1.suptitle("PCA plot for DBSCAN in "+inputFile.split("/")[-1],fontsize=20)
     if store:
         fig1.savefig("_".join([outputFile,inputFile.split("/")[-1].split(".")[0]])+".png")
-    else:
-        plt.show()
+    # else:
+        # plt.show()
 
 def main(argv):
     global distMatrix
@@ -165,7 +165,7 @@ def main(argv):
         storePCA = True
         outputFile = args.output
 
-    print(storePCA, outputFile)
+    # print storePCA, outputFile
 
     data,labels = loadData(inputFile)
 
