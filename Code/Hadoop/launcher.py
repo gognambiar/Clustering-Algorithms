@@ -229,7 +229,7 @@ if __name__ == "__main__":
     # if pca output given then take it
     if args.pca:
         storePCA = True
-        outputPCAFile = args.output
+        outputPCAFile = args.pca
 
     # run hadoop K Means
     new_data, data = launchHadoop(dataFile, centroidFile, k, max_iters, tolerance, centers, centersDefined)
