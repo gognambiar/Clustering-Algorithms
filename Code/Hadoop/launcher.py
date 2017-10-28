@@ -64,7 +64,7 @@ def launchHadoop(dataFile, centroidFile, k, max_iters, tolerance, centers, cente
     HADOOP_RUN_CMD[12] = "outputFile"
     HADOOP_RUN_CMD[-1] = str(k)
 
-    #HADOOP_RUN_CMD = HADOOP_RUN_CMD[:-2]
+    HADOOP_RUN_CMD = HADOOP_RUN_CMD[:-2]
     # print HADOOP_RUN_CMD
 
 
