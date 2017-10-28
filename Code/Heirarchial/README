@@ -23,3 +23,16 @@ Formats:
 			<id> <ground_truth> <feature1> <feature2> .. <featureN>
 
 	-n : integer : number of clusters for HAC
+
+The program gives the Rand Index, Jaccard Index and the cluster list as output.
+
+Required Libraries:
+	import numpy as np
+	from sklearn.metrics.pairwise import euclidean_distances
+	import os
+	import sys
+	import getopt
+	import copy
+	import argparse
+	from sklearn.decomposition import PCA as sklearnPCA
+	import matplotlib.pyplot as plt
