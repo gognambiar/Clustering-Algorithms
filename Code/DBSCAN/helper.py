@@ -9,7 +9,7 @@ bestJac = 0
 for eps in startEps:
 	for pts in minPts:
 		print eps,pts
-		proc = Popen(("""python2.7 dbscan.py -i ../../Data/cho.txt -e %s -m %s""" % (eps,pts)).split(), stdout=PIPE, stderr=PIPE)
+		proc = Popen(("""python2.7 dbscan.py -i ../../Data/iyer.txt -e %s -m %s""" % (eps,pts)).split(), stdout=PIPE, stderr=PIPE)
 		proc = proc.communicate()
 		out =  proc[0]
 		# print out
