@@ -30,5 +30,5 @@ for line in sys.stdin:
     point = np.array(map(float,line.split()))
     point = point[2:]
 
-    print "%s %s" % (getNearestClusterIndex(point)[0], " ".join(map(str,point)))
+    print "%s\t%s" % (getNearestClusterIndex(point)[0], " ".join(map(str,point)))
     

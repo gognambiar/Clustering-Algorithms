@@ -56,12 +56,16 @@ def launchHadoop(dataFile, centroidFile, k, max_iters, tolerance, centers, cente
 
     HADOOP_GET_CLUSTERS = "hdfs dfs -cat outputFile/*"
 
-    HADOOP_RUN_CMD = ['hadoop', 'jar', '/usr/local/Cellar/hadoop/2.8.1/libexec/share/hadoop/tools/lib/hadoop-streaming-2.8.1.jar', '--files', 'centroids,mapper.py,reducer.py', '--mapper', '"mapper.py centroids"', '--reducer', 'reducer.py', '--input', 'input/cho.txt', '--output', 'clusters']
+    HADOOP_RUN_CMD = ['hadoop', 'jar', '/usr/local/Cellar/hadoop/2.8.1/libexec/share/hadoop/tools/lib/hadoop-streaming-2.8.1.jar', '--files', 'centroids,mapper.py,reducer.py', '--mapper', '"mapper.py centroids"', '--reducer', 'reducer.py', '--input', 'input/cho.txt', '--output', 'clusters', '-numReduceTasks', '2']
     HADOOP_RUN_CMD[2] = hadoopStreaminJarPath
     HADOOP_RUN_CMD[4] = ','.join([centroidFile,'mapper.py','reducer.py'])
     HADOOP_RUN_CMD[6] = '"mapper.py %s"' % (centroidFile)
     HADOOP_RUN_CMD[10] = "inputFile/%s" % (dataFile.split("/")[-1])
     HADOOP_RUN_CMD[12] = "outputFile"
+    HADOOP_RUN_CMD[-1] = str(k)
+
+    #HADOOP_RUN_CMD = HADOOP_RUN_CMD[:-2]
+    # print HADOOP_RUN_CMD
 
 
     createCentroidsExecStr = '''python2.7 createCentroids.py -i %s -n %s -o %s''' % (dataFile, k, centroidFile)
@@ -144,7 +148,7 @@ def plotPCA( labels, data, inputFile, outputFile, store=False):
 
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
-    plt.legend(numpoints=1)
+    plt.legend(numpoints=1, loc=0)
     plt.subplots_adjust(bottom=.20, left=.20)
     fig1.suptitle("PCA plot for centroids in "+inputFile.split("/")[-1],fontsize=20)
     if store:
