@@ -16,7 +16,7 @@ Required named arguments:
 
 Formats:
 	-o : string : 	any valid path with filename to store pca plot
-			eg: python3 kmeans.py -i cho.txt -n 5 -a [3,5,9] -o result
+			eg: python3 kmeans.py -i cho.txt -n 5 -a [3,22,56,91,112] -o result
 	
 	-i : string :	any valid input data file to perform K-means
 			the file format should have n + 2 columns where n is the number of features
