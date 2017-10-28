@@ -5,74 +5,80 @@ import argparse
 from sklearn.decomposition import PCA as sklearnPCA
 import matplotlib.pyplot as plt
 
+#global dictionary for cluster number with gene_id
 cluster = {}
+#global list to store the distance matrix
 distMatrix = []
+#global matrix to store visited points
 visited = []
-my_labels = []
+#predicted label for gene_id based on the clustering algorithm we wrote
+predicted_labels = []
 
+
+#method to get filepath and read data file
+#strips the column of gene_id and ground truth and stores ground truth as labels
 def loadData(filePath):
     print(filePath)
     if not os.path.exists(filePath):
         return None
 
     data = np.genfromtxt(filePath, delimiter='\t')
-    # data /= 100
-    # print data
     labels = data[:,1]
     data = data[:,2:]
 
     return (data,labels)
 
+#method to generate distance matrix from given dataset
 def generateDistanceMatrix(data):
     return euclidean_distances(data,data)
 
-
+#method to implement dbScan algorithm
 def dbScan(data, eps, minPts):
     global visited
     global cluster
-    global my_labels
+    global predicted_labels
     c = 0 #cluster number
-    num_pts = data.shape[0]
-    visited = [False] * num_pts
-    my_labels= [0] * num_pts
-    for gene_id in range(0, num_pts):
+    #num_pts = data.shape[0]
+    visited = [False] * data.shape[0]
+    predicted_labels= [0] * data.shape[0]
+    for gene_id in range(0, data.shape[0]):
         #P=data[gene_id]
         if not visited[gene_id]:
             visited[gene_id] = True
             NeighborPts = regionQuery(data, gene_id, eps)
             if len(NeighborPts) < minPts:
                 cluster[gene_id] = -1
-                my_labels[gene_id]= -1
+                predicted_labels[gene_id]= -1
             else:
                 c = c+1
                 expandCluster(data, gene_id, NeighborPts, c, eps, minPts)
                 #c=c+1
           
 
-
 def expandCluster(data, gene_id, NeighborPts, c, eps, minPts):
     global cluster
     global visited
-    global my_labels
+    global predicted_labels
     cluster[gene_id] = c
-    my_labels[gene_id] = c
+    predicted_labels[gene_id] = c
     while True:
         if len(NeighborPts) == 0:
             break
         P_dash = NeighborPts.pop()
-       # print P_dash,len(NeighborPts),c
         if not visited[P_dash]:
             visited[P_dash] = True
             NeighborPts_dash = regionQuery(data, P_dash, eps)
             if len(NeighborPts_dash) >= minPts:
                 NeighborPts.extend(NeighborPts_dash)
+
+        #check if a point marked as noise before lies as a neighbor point for any other point,
+        #if so add add that point to 
         if visited[P_dash] and P_dash in cluster and cluster[P_dash] == -1 :
             cluster[P_dash] = c
-            my_labels[P_dash] = c
-            #print("Noise to cluster")
+            predicted_labels[P_dash] = c
         if not P_dash in cluster:
                 cluster[P_dash] = c
-                my_labels[P_dash]=c
+                predicted_labels[P_dash]=c
    
 def regionQuery(data, gene_id, eps):
     neighbors = []
@@ -112,15 +118,16 @@ def calcIndexes(clusters, ground_truth):
 
 def plotPCA(labels, data, inputFile, outputFile, store=False):
     sklearn_pca = sklearnPCA(n_components=2)
-    newData = sklearn_pca.fit_transform(data)
+    sklearn_pca.fit(data)
+    newData = sklearn_pca.transform(data)
     xval = newData[:,0]
     yval = newData[:,1]
     lbls = set(labels)
-    #(my_labels)
+    #(predicted_labels)
     fig1 = plt.figure(1)
     #print(lbls)
     for lbl in lbls:
-        #cond = my_labels == lbl
+        #cond = predicted_labels == lbl
         cond = [i for i, x in enumerate(labels) if x == lbl]
         plt.plot(xval[cond], yval[cond], linestyle='none', marker='o', label=lbl)
 
@@ -136,7 +143,7 @@ def plotPCA(labels, data, inputFile, outputFile, store=False):
 
 def main(argv):
     global distMatrix
-    global my_labels
+    global predicted_labels
     parser = argparse.ArgumentParser(description='DBSCAN Clustering')
     # optional arguments
     parser.add_argument('-o', '--output', help='Output file to store PCA visualization')
@@ -164,12 +171,12 @@ def main(argv):
     distMatrix = generateDistanceMatrix(data)
 
     dbScan(data, eps, minPts)
+      
     randIndex, jaccIndex = calcIndexes(cluster, labels)
-
     print "Rand Index: ", randIndex
     print "Jaccard Index: ", jaccIndex
 
-    plotPCA(my_labels , data, inputFile, outputFile, storePCA)
+    plotPCA(predicted_labels , data, inputFile, outputFile, storePCA)
 
 
 if __name__ == "__main__":
