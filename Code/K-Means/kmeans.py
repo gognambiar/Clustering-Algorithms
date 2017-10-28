@@ -26,8 +26,7 @@ def calcent(centroid_array,centroid_of_elements,original_data):
 		new_centroid_array[k] = np.average(np.array(sm),axis=0)#Finding the centroid of the cluster
 
 	ctr += 1
-	#if((not np.array_equal(centroid_array,new_centroid_array)) and ctr < 10):#Maximum number of iterations is given as 10
-	if(ctr <= num_of_iterations):
+	if((not np.array_equal(centroid_array,new_centroid_array)) and num_of_iterations <= num_of_iterations):#Maximum number of iterations is given as 10
 		centroid_array,centroid_of_elements,ctr = calcent(new_centroid_array,centroid_of_elements,original_data)
 	
 	return centroid_array,centroid_of_elements,ctr
@@ -67,8 +66,8 @@ def calcrand(centroid_array,centroid_of_elements,ground_truth):
 			else:
 				m00 += 1
 	
-	value_rand = (m11+m00)/float(m11+m01+m10+m00)#Calculating Rand Index
-	value_jaccard = m11/float(m11+m10+m01)#Calculating Jaccard Index
+	value_rand = (m11+m00)/(m11+m01+m10+m00)#Calculating Rand Index
+	value_jaccard = m11/(m11+m10+m01)#Calculating Jaccard Index
 	return [value_rand,value_jaccard,cluster_number_elements]
 
 def plotPCA(cluster_number_elements,orig_data_frames,file_name,storePCA,outputFile):
@@ -76,7 +75,7 @@ def plotPCA(cluster_number_elements,orig_data_frames,file_name,storePCA,outputFi
 	Y = sklearn_pca.fit_transform(orig_data_frames)#Calling PCA function
 	xval = pd.DataFrame(Y)[0]
 	yval = pd.DataFrame(Y)[1]
-	lbls = set(cluster_number_elements.astype(int))
+	lbls = set(cluster_number_elements)
 	fig1 = plt.figure(1)
 	for lbl in lbls:
 		cond = cluster_number_elements == lbl
@@ -87,7 +86,7 @@ def plotPCA(cluster_number_elements,orig_data_frames,file_name,storePCA,outputFi
 	plt.legend(numpoints=1, fontsize = 'x-small', loc=0)
 	plt.subplots_adjust(bottom=.20, left=.20)
 	plt.grid()
-	fig1.suptitle("K-MEANS PCA plot for centroids in "+file_name.split("/")[-1],fontsize=20)
+	fig1.suptitle("PCA plot for centroids in "+file_name.split("/")[-1],fontsize=20)
 	#fig1.savefig("PCA_"+file_name+".png")#Plotting the results based on PCA
 	if(storePCA == True):
 		fig1.savefig("_".join([outputFile,file_name.split("/")[-1].split(".")[0]])+".png")#Plotting the results based on PCA
@@ -141,7 +140,8 @@ def main():
 	centroid_of_elements = [[] for i in range(orig_data_frames.shape[0])]
 	centroid_array,centroid_of_elements,ctr = calcent(centroid_array,centroid_of_elements,original_data)#Calculate Centroid
 	value_rand,value_jaccard,cluster_number_elements = calcrand(centroid_array,centroid_of_elements,ground_truth)#Calculate Rand and Jaccard Indexes
-	print("The Number of Iterations before converging is " + str(ctr-1))
+	for i in  range(len(cluster_number_elements)):
+		print(str(i+1)+"\t"+str(cluster_number_elements[i]))
 	print("The Rand Index is " + str(value_rand))
 	print("The Jaccard Index is " + str(value_jaccard))
 	plotPCA(cluster_number_elements,orig_data_frames,file_name,storePCA,outputFile)#Plot PCA graph
