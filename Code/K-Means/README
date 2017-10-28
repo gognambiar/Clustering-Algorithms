@@ -1,4 +1,4 @@
-usage: kmeans.py [-h] [-o OUTPUT] -i INPUT -n NUM -a CENTARRAY
+usage: kmeans.py [-h] [-o OUTPUT] -i INPUT -n NUM -t ITERATION -a CENTARRAY
 
 K-means Clustering
 
@@ -11,8 +11,11 @@ Required named arguments:
   -i INPUT, --input INPUT
                         Input data file name
   -n NUM, --num NUM     Number of Clusters
+  -t ITERATION, --iteration ITERATION
+                        Number of Iterations
   -a CENTARRAY, --centarray CENTARRAY
                         Initial Centroid Gene IDs
+
 
 Formats:
 	-o : string : 	any valid path with filename to store pca plot
@@ -23,5 +26,7 @@ Formats:
 			<id> <ground_truth> <feature1> <feature2> .. <featureN>
 
 	-n : integer : number of clusters for K-means
+	
+	-t : integer : number of iterations to run the algorithm
   
   	-a : string : Initial centroid points Eg: [3, 5, 9]
