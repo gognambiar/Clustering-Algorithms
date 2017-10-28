@@ -30,3 +30,5 @@ Formats:
 	-t : integer : number of iterations to run the algorithm
   
   	-a : string : Initial centroid points Eg: [3, 5, 9]
+
+The program gives the Rand Index, Jaccard Index and the cluster list as output.
