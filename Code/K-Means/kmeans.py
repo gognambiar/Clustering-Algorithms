@@ -102,7 +102,7 @@ def main():
 	requiredNamed = parser.add_argument_group('Required named arguments')
 	requiredNamed.add_argument('-i', '--input', help='Input data file name', required=True, type=str)
 	requiredNamed.add_argument('-n', '--num', help='Number of Clusters', required=True, type=int)
-	requiredNamed.add_argument('-a', '--centarray', help='Centroid Values', required=True, type=str)
+	requiredNamed.add_argument('-a', '--centarray', help='Initial Centroid Gene IDs', required=True, type=str)
 	args = parser.parse_args()
 
 	file_name = args.input
@@ -115,6 +115,7 @@ def main():
 	    storePCA = True
 	    outputFile = args.output
 
+	initial_points = initial_points.replace("[","").replace("]","")
 	initial_points = initial_points.split(",")
 	initial_points = [int(i) for i in initial_points]		
 	if(len(initial_points) != int(p)):
