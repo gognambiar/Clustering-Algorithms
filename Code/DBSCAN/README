@@ -1,0 +1,43 @@
+usage: dbscan.py [-h] [-o OUTPUT] -i INPUT -e EPS -m MINPTS
+
+DBSCAN Clustering
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -o OUTPUT, --output OUTPUT
+                        Output file to store PCA visualization
+
+Required named arguments:
+  -i INPUT, --input INPUT
+                        Input data file name
+  -e EPS, --eps EPS     Value of epsilon, The maximum distance between two
+                        points for them to be considered as in the same
+                        cluster.
+  -m MINPTS, --minpts MINPTS
+                        Value of minpoints, The number of points in a cluster
+                        for a point to be considered as a core point. This
+                        includes the point itself
+
+Formats:
+	-o : string : 	any valid path with filename to store pca path
+			the program will automatically append the filename of input in the figure
+			eg: python2.7 heirarchial.py -i cho.txt -n 5 -o ~/Desktop/PCA
+				pca filename: ~/Desktop/PCA_cho.png
+	
+	-i : string :	any valid input data file to perform HAC
+			the file format should have n + 2 columns where n is the number of features
+			<id> <ground_truth> <feature1> <feature2> .. <featureN>
+
+	-e : float : 	maximum distance between two points
+
+	-m : integer :	number of points in a cluster
+
+The program gives the Rand Index, Jaccard Index and the cluster list as output.
+
+Required Libraries:
+	import numpy as np
+	from sklearn.metrics.pairwise import euclidean_distances
+	import os, sys, copy
+	import argparse
+	from sklearn.decomposition import PCA as sklearnPCA
+	import matplotlib.pyplot as plt
