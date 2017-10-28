@@ -1,4 +1,4 @@
-usage: python3 kmeans.py -h -o OUTPUT -i INPUT -n NUM -a CENTROIDS
+usage: kmeans.py [-h] [-o OUTPUT] -i INPUT -n NUM -a CENTARRAY
 
 K-means Clustering
 
@@ -11,7 +11,8 @@ Required named arguments:
   -i INPUT, --input INPUT
                         Input data file name
   -n NUM, --num NUM     Number of Clusters
-  -a CENTROIDS --CENTROIDS Initial Centroid GeneIDs
+  -a CENTARRAY, --centarray CENTARRAY
+                        Initial Centroid Gene IDs
 
 Formats:
 	-o : string : 	any valid path with filename to store pca plot
