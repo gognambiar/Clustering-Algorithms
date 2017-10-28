@@ -24,4 +24,4 @@ Formats:
 
 	-n : integer : number of clusters for K-means
   
-  -a : string : Initial centroid points Eg: [3, 5, 9]
+  	-a : string : Initial centroid points Eg: [3, 5, 9]
