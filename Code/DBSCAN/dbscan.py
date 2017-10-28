@@ -92,8 +92,8 @@ def calcIndexes(clusters, ground_truth):
     predicted = np.zeros((ground_truth.shape[0],ground_truth.shape[0]))
     actual = np.zeros((ground_truth.shape[0], ground_truth.shape[0]))
 
-    for i in xrange(ground_truth.shape[0]):
-        for j in xrange(ground_truth.shape[0]):
+    for i in range(ground_truth.shape[0]):
+        for j in range(ground_truth.shape[0]):
             if cluster[i] == cluster[j]:
                 predicted[i][j] = 1
             if ground_truth[i] == ground_truth[j]:
@@ -133,8 +133,9 @@ def plotPCA(labels, data, inputFile, outputFile, store=False):
 
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
-    plt.legend(numpoints=1, loc=0)
+    plt.legend(numpoints=1, loc=0, fontsize = 'x-small')
     plt.subplots_adjust(bottom=.20, left=.20)
+    plt.grid()
     fig1.suptitle("PCA plot for DBSCAN in "+inputFile.split("/")[-1],fontsize=20)
     if store:
         fig1.savefig("_".join([outputFile,inputFile.split("/")[-1].split(".")[0]])+".png")
@@ -164,7 +165,7 @@ def main(argv):
         storePCA = True
         outputFile = args.output
 
-    print storePCA, outputFile
+    print(storePCA, outputFile)
 
     data,labels = loadData(inputFile)
 
@@ -173,8 +174,8 @@ def main(argv):
     dbScan(data, eps, minPts)
       
     randIndex, jaccIndex = calcIndexes(cluster, labels)
-    print "Rand Index: ", randIndex
-    print "Jaccard Index: ", jaccIndex
+    print("Rand Index: ", randIndex)
+    print("Jaccard Index: ", jaccIndex)
 
     plotPCA(predicted_labels , data, inputFile, outputFile, storePCA)
 
