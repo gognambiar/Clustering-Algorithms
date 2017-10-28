@@ -86,7 +86,7 @@ def plotPCA(cluster_number_elements,orig_data_frames,file_name,storePCA,outputFi
 	plt.legend(numpoints=1, fontsize = 'x-small', loc=0)
 	plt.subplots_adjust(bottom=.20, left=.20)
 	plt.grid()
-	fig1.suptitle("PCA plot for centroids in "+file_name.split("/")[-1],fontsize=20)
+	fig1.suptitle("PCA plot for clusters in "+file_name.split("/")[-1],fontsize=20)
 	#fig1.savefig("PCA_"+file_name+".png")#Plotting the results based on PCA
 	if(storePCA == True):
 		fig1.savefig("_".join([outputFile,file_name.split("/")[-1].split(".")[0]])+".png")#Plotting the results based on PCA
