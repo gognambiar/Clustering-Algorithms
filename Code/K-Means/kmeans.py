@@ -66,8 +66,8 @@ def calcrand(centroid_array,centroid_of_elements,ground_truth):
 			else:
 				m00 += 1
 	
-	value_rand = (m11+m00)/float(m11+m01+m10+m00)#Calculating Rand Index
-	value_jaccard = m11/float(m11+m10+m01)#Calculating Jaccard Index
+	value_rand = (m11+m00)/(m11+m01+m10+m00)#Calculating Rand Index
+	value_jaccard = m11/(m11+m10+m01)#Calculating Jaccard Index
 	return [value_rand,value_jaccard,cluster_number_elements]
 
 def plotPCA(cluster_number_elements,orig_data_frames,file_name,storePCA,outputFile):
@@ -143,6 +143,7 @@ def main():
 	print("Gene ID"+"\t"+"Cluster Number")
 	for i in  range(len(cluster_number_elements)):
 		print(str(i+1)+"\t"+str(cluster_number_elements[i]))
+	print("The number of iterations before the algorithm converges is "+str(ctr-1))
 	print("The Rand Index is " + str(value_rand))
 	print("The Jaccard Index is " + str(value_jaccard))
 	plotPCA(cluster_number_elements,orig_data_frames,file_name,storePCA,outputFile)#Plot PCA graph
