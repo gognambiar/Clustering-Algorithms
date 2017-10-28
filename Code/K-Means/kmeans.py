@@ -26,7 +26,8 @@ def calcent(centroid_array,centroid_of_elements,original_data):
 		new_centroid_array[k] = np.average(np.array(sm),axis=0)#Finding the centroid of the cluster
 
 	ctr += 1
-	if((not np.array_equal(centroid_array,new_centroid_array)) and ctr < 500):#Maximum number of iterations is given as 500
+	#if((not np.array_equal(centroid_array,new_centroid_array)) and ctr < 10):#Maximum number of iterations is given as 10
+	if(ctr <= num_of_iterations):
 		centroid_array,centroid_of_elements,ctr = calcent(new_centroid_array,centroid_of_elements,original_data)
 	
 	return centroid_array,centroid_of_elements,ctr
@@ -83,9 +84,10 @@ def plotPCA(cluster_number_elements,orig_data_frames,file_name,storePCA,outputFi
 
 	plt.xlabel('Principal Component 1')
 	plt.ylabel('Principal Component 2')
-	plt.legend(numpoints=1)
+	plt.legend(numpoints=1, fontsize = 'x-small', loc=0)
 	plt.subplots_adjust(bottom=.20, left=.20)
-	fig1.suptitle("PCA plot for centroids in "+file_name.split("/")[-1],fontsize=20)
+	plt.grid()
+	fig1.suptitle("K-MEANS PCA plot for centroids in "+file_name.split("/")[-1],fontsize=20)
 	#fig1.savefig("PCA_"+file_name+".png")#Plotting the results based on PCA
 	if(storePCA == True):
 		fig1.savefig("_".join([outputFile,file_name.split("/")[-1].split(".")[0]])+".png")#Plotting the results based on PCA
@@ -95,6 +97,7 @@ def plotPCA(cluster_number_elements,orig_data_frames,file_name,storePCA,outputFi
 
 def main():
 	import argparse
+	global num_of_iterations
 	parser = argparse.ArgumentParser(description='K-means Clustering')
 	# optional arguments
 	parser.add_argument('-o', '--output', help='Output file to store PCA visualization')
@@ -102,11 +105,13 @@ def main():
 	requiredNamed = parser.add_argument_group('Required named arguments')
 	requiredNamed.add_argument('-i', '--input', help='Input data file name', required=True, type=str)
 	requiredNamed.add_argument('-n', '--num', help='Number of Clusters', required=True, type=int)
-	requiredNamed.add_argument('-a', '--centarray', help='Centroid Values', required=True, type=str)
+	requiredNamed.add_argument('-t', '--iteration', help='Number of Iterations', required=True, type=int)
+	requiredNamed.add_argument('-a', '--centarray', help='Initial Centroid Gene IDs', required=True, type=str)
 	args = parser.parse_args()
 
 	file_name = args.input
 	p = args.num
+	num_of_iterations = args.iteration
 	initial_points = args.centarray
 	storePCA = False
 	outputFile = None
@@ -115,21 +120,20 @@ def main():
 	    storePCA = True
 	    outputFile = args.output
 
+	initial_points = initial_points.replace("[","").replace("]","")
 	initial_points = initial_points.split(",")
 	initial_points = [int(i) for i in initial_points]		
-	if(len(initial_points) != int(p)):
+	if(len(initial_points) != p):
 		print("Please enter the initial centroids for all the clusters")
 		sys.exit(2)
 
 	global ctr
-	ctr = 0
+	ctr = 1
 	data_from_file = pd.read_csv(file_name,sep='\t',header=None)#Reading the file as Pandas dataframe so that we can treat each column as an element
 	orig_data_frames = data_from_file.drop([0,1], 1)#Dropping the column number and ground truth columns from data
 	ground_truth = data_from_file[1]#Storing ground truth column
 	orig_data_frames.columns = [i for i in range(orig_data_frames.shape[1])]#Renaming the columns from 0 to n
 	original_data = orig_data_frames.transpose()#Taking transpose so that we can treat the data like normal array where we can access rows
-	#initial_points=[randint(0,orig_data_frames.shape[0]-1) for p in range(0,5)]
-	#initial_points = [5,25,32,100,132]
 	initial_points = [x-1 for x in initial_points]
 	initial_points.sort()
 	centroid_array = [original_data[i] for i in initial_points]#Picking centroids for the initial points
@@ -137,7 +141,7 @@ def main():
 	centroid_of_elements = [[] for i in range(orig_data_frames.shape[0])]
 	centroid_array,centroid_of_elements,ctr = calcent(centroid_array,centroid_of_elements,original_data)#Calculate Centroid
 	value_rand,value_jaccard,cluster_number_elements = calcrand(centroid_array,centroid_of_elements,ground_truth)#Calculate Rand and Jaccard Indexes
-	print("The Number of Iterations before converging is " + str(ctr))
+	print("The Number of Iterations before converging is " + str(ctr-1))
 	print("The Rand Index is " + str(value_rand))
 	print("The Jaccard Index is " + str(value_jaccard))
 	plotPCA(cluster_number_elements,orig_data_frames,file_name,storePCA,outputFile)#Plot PCA graph
